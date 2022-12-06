@@ -18,3 +18,4 @@ name = "day-three"
 path = "src/day_3/main.rs"
 
 [dependencies]
+array_tool = "1.0.3"
