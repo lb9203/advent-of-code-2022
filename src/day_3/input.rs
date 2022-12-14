@@ -1,15 +1,3 @@
-#![allow(dead_code)]
-pub fn example_input() -> &'static str {
-    "
-        vJrwpWtwJgWrhcsFMMfFFhFp
-        jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-        PmmdzqPrVvPwwTWBwg
-        wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-        ttgJtRGJQctTZtZT
-        CrZsJsPPZsGzwwsLwLmpwMDw
-    "
-}
-
 pub fn my_input() -> &'static str {
     "
         jVTBgVbgJQVrTLRRsLvRzWcZvnDs

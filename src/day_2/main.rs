@@ -1,63 +1,88 @@
 extern crate core;
 
-use crate::input::{example_input, my_input};
+use crate::input::{get_input};
 use crate::Move::{PAPER, ROCK, SCISSORS};
-use crate::Result::{DRAW, LOSS, VICTORY};
+use crate::Outcome::{DRAW, LOSS, VICTORY};
 
 mod input;
 
 fn main() {
-    let input = my_input();
-    let mut running_score_1 = 0;
-    let mut running_score_2 = 0;
+    println!("My score when I was figuring it out myself is {}.", my_guess(get_input()));
+    println!("My score after the Elf told me what the strategy actually means will be {}.", actually(get_input()));
+}
 
-    for mut line in input.lines() {
-        line = line.trim();
+fn my_guess(input: &str) -> i32 {
+    let mut running_score = 0;
 
-        if line.is_empty() {
-            continue;
-        }
+    for line in input.lines() {
+        let (op_move, my_move) = match parse_line(line) {
+            Ok(res) => res,
+            Err(_) => continue
+        };
 
-        let parts = line.split_whitespace().collect::<Vec<&str>>();
-
-        if parts.len() != 2 {
-            panic!("Invalid input line: {}", line)
-        }
-
-        running_score_1 += get_score(parts[0], parts[1]);
-        running_score_2 += get_score_2(parts[0], parts[1]);
+        running_score += get_score(op_move, my_move);
     }
 
-    println!("My score when I was figuring it out myself is {}.", running_score_1);
-    println!("My score after the Elf told me what the strategy actually means will be {}.", running_score_2);
+    return running_score
+}
+
+fn actually(input: &str) -> i32 {
+    let mut running_score = 0;
+
+    for line in input.lines() {
+        let (op_move, required_outcome) = match parse_line(line) {
+            Ok(res) => res,
+            Err(_) => continue
+        };
+
+        running_score += get_score_2(op_move, required_outcome);
+    }
+
+    return running_score
+}
+
+fn parse_line(mut input_line: &str) -> Result<(&str, &str), &str> {
+    input_line = input_line.trim();
+
+    if input_line.is_empty() {
+        return Err("Empty line.")
+    }
+
+    let parts = input_line.split_whitespace().collect::<Vec<&str>>();
+
+    if parts.len() != 2 {
+        return Err("Invalid line.")
+    }
+
+    Ok((parts[0], parts[1]))
 }
 
 fn get_score(op_move: &str, my_move: &str) -> i32 {
-    Result::from_moves(
+    Outcome::from_moves(
         Move::from_str(op_move),
         Move::from_str(my_move)
     ).score() + Move::from_str(my_move).score()
 }
 
-fn get_score_2(op_move: &str, required_result: &str) -> i32 {
-    let parsed_required_result = Result::from_str(required_result);
-    let my_move = parsed_required_result.get_required_move(Move::from_str(op_move));
+fn get_score_2(op_move: &str, required_outcome: &str) -> i32 {
+    let parse_require_outcome = Outcome::from_str(required_outcome);
+    let my_move = parse_require_outcome.get_required_move(Move::from_str(op_move));
 
-    return Result::from_moves(
+    return Outcome::from_moves(
         Move::from_str(op_move),
         my_move
     ).score() + my_move.score();
 }
 
 #[derive(PartialEq, Eq)]
-enum Result {
+enum Outcome {
     VICTORY,
     LOSS,
     DRAW
 }
 
-impl Result {
-    pub fn from_moves(op_move: Move, my_move: Move) -> Result
+impl Outcome {
+    pub fn from_moves(op_move: Move, my_move: Move) -> Outcome
     {
         if op_move == my_move {
             return DRAW;
@@ -99,7 +124,7 @@ impl Result {
         }
     }
 
-    pub fn from_str(str: &str) -> Result {
+    pub fn from_str(str: &str) -> Outcome {
         match str {
             "X" => LOSS,
             "Y" => DRAW,
@@ -132,5 +157,26 @@ impl Move {
             PAPER => 2,
             SCISSORS => 3,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{actually, my_guess};
+
+    const TEST_INPUT: &str = "
+        A Y
+        B X
+        C Z
+    ";
+
+    #[test]
+    fn test_my_guess() {
+        assert_eq!(my_guess(TEST_INPUT), 15)
+    }
+
+    #[test]
+    fn test_actually() {
+        assert_eq!(actually(TEST_INPUT), 12)
     }
 }

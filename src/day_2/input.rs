@@ -1,12 +1,4 @@
-pub fn example_input() -> &'static str {
-    "
-        A Y
-        B X
-        C Z
-    "
-}
-
-pub fn my_input() -> &'static str {
+pub fn get_input() -> &'static str {
     "
         C X
         C Y

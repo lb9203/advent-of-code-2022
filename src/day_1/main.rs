@@ -41,3 +41,35 @@ fn top(input: &str, number: usize) -> Vec<i32> {
 
     return calories
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::top;
+
+    const TEST_INPUT: &str = "
+        1000
+        2000
+        3000
+
+        4000
+
+        5000
+        6000
+
+        7000
+        8000
+        9000
+
+        10000
+    ";
+
+    #[test]
+    fn test_day_1_1() {
+        assert_eq!(top(TEST_INPUT, 1)[0], 24000);
+    }
+
+    #[test]
+    fn test_day_1_2() {
+        assert_eq!(top(TEST_INPUT, 3).iter().sum::<i32>(), 45000);
+    }
+}
